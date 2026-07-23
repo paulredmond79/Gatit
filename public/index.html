@@ -5,6 +5,90 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Days Since Galen Was At It</title>
   <style>
+    :root {
+      /* Base palette — the "neon sign in a dark pub" scheme */
+      --navy-950: #1a1a2e;
+      --navy-900: #16213e;
+      --navy-800: #1e2a4f;
+
+      --red-500: #e94560;
+      --red-400: #ff5b78;
+
+      --ink-100: #e0e0e0;
+      --ink-300: #c0c0e0;
+      --ink-400: #a0a0c0;
+      --ink-600: #606080;
+
+      --glow-40: rgba(233, 69, 96, 0.4);
+      --glow-60: rgba(233, 69, 96, 0.6);
+      --overlay-60: rgba(0, 0, 0, 0.6);
+
+      --bg: var(--navy-950);
+      --surface: var(--navy-900);
+      --surface-hover: var(--navy-800);
+
+      --accent: var(--red-500);
+      --accent-hover: var(--red-400);
+      --on-accent: var(--navy-900);
+
+      --text-body: var(--ink-100);
+      --text-cool: var(--ink-300);
+      --text-muted: var(--ink-400);
+      --text-faint: var(--ink-600);
+
+      --border-accent: var(--red-500);
+      --border-neutral: var(--ink-600);
+
+      --overlay: var(--overlay-60);
+
+      --font-sans: 'Segoe UI', Tahoma, Verdana, sans-serif;
+
+      --weight-light: 300;
+      --weight-bold: 700;
+      --weight-black: 900;
+
+      --text-count: clamp(6rem, 20vw, 12rem);
+      --text-display: clamp(2rem, 6vw, 3.5rem);
+      --text-title: clamp(1.4rem, 4vw, 2rem);
+      --text-label-lg: clamp(1.2rem, 3vw, 1.6rem);
+      --text-lg: 1.1rem;
+      --text-md: 1rem;
+      --text-sm: 0.95rem;
+      --text-xs: 0.9rem;
+
+      --leading-tight: 1;
+      --leading-normal: 1.5;
+
+      --ls-label: 0.12em;
+      --ls-button: 0.1em;
+      --ls-wide: 0.18em;
+      --ls-widest: 0.2em;
+
+      --space-1: 8px;
+      --space-2: 12px;
+      --space-4: 20px;
+      --space-5: 24px;
+      --space-7: 32px;
+
+      --radius-sm: 8px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 16px;
+
+      --border-hair: 2px;
+      --border-thin: 3px;
+      --border-med: 4px;
+      --border-thick: 6px;
+
+      --shadow-glow: 0 0 40px var(--glow-40);
+      --text-glow: 0 0 20px var(--glow-60);
+
+      --ease: ease;
+      --dur-fast: 0.1s;
+      --dur-base: 0.15s;
+      --press-scale: 0.97;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -17,69 +101,154 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background-color: #1a1a2e;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #e0e0e0;
-      padding: 24px;
+      background: var(--bg);
+      font-family: var(--font-sans);
+      color: var(--text-body);
+      gap: var(--space-7);
+      padding: 48px 24px;
     }
 
     .sign {
-      background-color: #16213e;
-      border: 6px solid #e94560;
-      border-radius: 16px;
-      padding: 48px 64px;
+      position: relative;
+      width: min(460px, 90vw);
+      background: var(--surface);
+      border: var(--border-thick) solid var(--border-accent);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-glow);
+      overflow: hidden;
       text-align: center;
-      box-shadow: 0 0 40px rgba(233, 69, 96, 0.4);
-      margin-bottom: 32px;
-      max-width: 90vw;
+    }
+
+    .sign-portrait {
+      position: relative;
+      line-height: 0;
+    }
+
+    .sign-portrait img {
+      display: block;
+      width: 100%;
+      height: auto;
+      filter: saturate(0.88) contrast(1.05) brightness(0.96);
+    }
+
+    .sign-portrait::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(130% 120% at 50% 36%, transparent 46%, rgba(26, 26, 46, 0.55) 100%);
+      mix-blend-mode: multiply;
+    }
+
+    .sign-portrait::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      box-shadow: inset 0 0 60px rgba(26, 26, 46, 0.5), inset 0 0 26px var(--glow-40);
+    }
+
+    .sign-portrait-fade {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 38%;
+      pointer-events: none;
+      background: linear-gradient(to bottom, transparent, var(--surface) 92%);
+    }
+
+    .sign-body {
+      padding: 8px 40px 40px;
+      margin-top: -8px;
+      position: relative;
+    }
+
+    .sign-eyebrow {
+      text-transform: uppercase;
+      letter-spacing: var(--ls-wide);
+      font-size: var(--text-xs);
+      font-weight: var(--weight-bold);
+      color: var(--text-faint);
+      margin-bottom: var(--space-2);
     }
 
     .sign-title {
-      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-size: var(--text-title);
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: #a0a0c0;
-      margin-bottom: 20px;
+      letter-spacing: var(--ls-label);
+      color: var(--text-muted);
+      margin-bottom: var(--space-4);
     }
 
     .days-count {
-      font-size: clamp(6rem, 20vw, 12rem);
-      font-weight: 900;
-      color: #e94560;
-      line-height: 1;
-      text-shadow: 0 0 20px rgba(233, 69, 96, 0.6);
+      font-size: var(--text-count);
+      font-weight: var(--weight-black);
+      color: var(--accent);
+      line-height: var(--leading-tight);
+      text-shadow: var(--text-glow);
+      font-variant-numeric: tabular-nums;
     }
 
     .days-label {
-      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      font-size: var(--text-label-lg);
       text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: #a0a0c0;
-      margin-top: 12px;
+      letter-spacing: var(--ls-wide);
+      color: var(--text-muted);
+      margin-top: var(--space-1);
     }
 
-    .reset-button {
-      font-family: inherit;
-      font-size: 1rem;
-      font-weight: 700;
+    .btn {
+      font-family: var(--font-sans);
+      font-weight: var(--weight-bold);
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #e0e0e0;
-      background-color: #16213e;
-      border: 3px solid #e94560;
-      border-radius: 10px;
-      padding: 14px 28px;
+      letter-spacing: var(--ls-button);
       cursor: pointer;
-      margin-bottom: 32px;
-      transition: background-color 0.15s ease, transform 0.1s ease;
+      transition: background-color var(--dur-base) var(--ease), transform var(--dur-fast) var(--ease);
+      border-radius: var(--radius-md);
     }
 
-    .reset-button:hover {
-      background-color: #1e2a4f;
+    .btn:active {
+      transform: scale(var(--press-scale));
     }
 
-    .reset-button:active {
-      transform: scale(0.97);
+    .btn-outline {
+      color: var(--text-body);
+      background-color: var(--surface);
+      border: var(--border-thin) solid var(--border-accent);
+      font-size: var(--text-md);
+      padding: 14px 28px;
+    }
+
+    .btn-outline:hover {
+      background-color: var(--surface-hover);
+    }
+
+    .btn-confirm {
+      color: var(--on-accent);
+      background-color: var(--accent);
+      border: var(--border-hair) solid transparent;
+      font-size: var(--text-sm);
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-confirm:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .btn-ghost {
+      color: var(--text-muted);
+      background-color: transparent;
+      border: var(--border-hair) solid var(--border-neutral);
+      font-size: var(--text-sm);
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text-body);
+      border-color: var(--text-muted);
     }
 
     .clock-container {
@@ -87,18 +256,18 @@
     }
 
     .clock-label {
-      font-size: 0.9rem;
+      font-size: var(--text-xs);
       text-transform: uppercase;
-      letter-spacing: 0.2em;
-      color: #606080;
-      margin-bottom: 8px;
+      letter-spacing: var(--ls-widest);
+      color: var(--text-faint);
+      margin-bottom: var(--space-1);
     }
 
     .clock {
-      font-size: clamp(2rem, 6vw, 3.5rem);
-      font-weight: 300;
-      letter-spacing: 0.1em;
-      color: #c0c0e0;
+      font-size: var(--text-display);
+      font-weight: var(--weight-light);
+      letter-spacing: var(--ls-button);
+      color: var(--text-cool);
       font-variant-numeric: tabular-nums;
     }
 
@@ -106,10 +275,10 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.6);
+      background: var(--overlay);
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: var(--space-5);
       z-index: 10;
     }
 
@@ -118,70 +287,45 @@
     }
 
     .modal {
-      background-color: #16213e;
-      border: 4px solid #e94560;
-      border-radius: 14px;
-      padding: 32px;
+      background-color: var(--surface);
+      border: var(--border-med) solid var(--border-accent);
+      border-radius: var(--radius-lg);
+      padding: var(--space-7);
       max-width: 420px;
       text-align: center;
-      box-shadow: 0 0 40px rgba(233, 69, 96, 0.4);
+      box-shadow: var(--shadow-glow);
     }
 
     .modal-quip {
-      font-size: 1.1rem;
-      line-height: 1.5;
-      color: #e0e0e0;
-      margin-bottom: 24px;
+      font-size: var(--text-lg);
+      line-height: var(--leading-normal);
+      color: var(--text-body);
+      margin-bottom: var(--space-5);
     }
 
     .modal-actions {
       display: flex;
-      gap: 12px;
+      gap: var(--space-2);
       justify-content: center;
-    }
-
-    .modal-actions button {
-      font-family: inherit;
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      border-radius: 8px;
-      padding: 12px 20px;
-      cursor: pointer;
-      border: 2px solid transparent;
-    }
-
-    .modal-confirm {
-      background-color: #e94560;
-      color: #16213e;
-    }
-
-    .modal-confirm:hover {
-      background-color: #ff5b78;
-    }
-
-    .modal-cancel {
-      background-color: transparent;
-      border-color: #606080;
-      color: #a0a0c0;
-    }
-
-    .modal-cancel:hover {
-      color: #e0e0e0;
-      border-color: #a0a0c0;
     }
   </style>
 </head>
 <body>
 
   <div class="sign">
-    <div class="sign-title">Days since Galen was at it</div>
-    <div class="days-count" id="days-count">--</div>
-    <div class="days-label">Days</div>
+    <div class="sign-portrait">
+      <img src="assets/sir-rant-a-lot.jpg" alt="Sir Rant-a-Lot, a caricature portrait of Galen — tweed, monocle, Union Jack waistcoat, ranting beside a Range Rover, roadworks and a Garda">
+      <div class="sign-portrait-fade"></div>
+    </div>
+    <div class="sign-body">
+      <div class="sign-eyebrow">Sir Rant-a-Lot &middot; Exhibit A</div>
+      <div class="sign-title">Days since Galen was at it</div>
+      <div class="days-count" id="days-count">--</div>
+      <div class="days-label">Days</div>
+    </div>
   </div>
 
-  <button class="reset-button" id="reset-button" type="button">He was at it again</button>
+  <button class="btn btn-outline" id="reset-button" type="button">He was at it again</button>
 
   <div class="clock-container">
     <div class="clock-label">Current time</div>
@@ -192,8 +336,8 @@
     <div class="modal">
       <div class="modal-quip" id="modal-quip"></div>
       <div class="modal-actions">
-        <button class="modal-confirm" id="modal-confirm" type="button">Reset it</button>
-        <button class="modal-cancel" id="modal-cancel" type="button">Nevermind</button>
+        <button class="btn btn-confirm" id="modal-confirm" type="button">Reset it</button>
+        <button class="btn btn-ghost" id="modal-cancel" type="button">Nevermind</button>
       </div>
     </div>
   </div>
@@ -204,7 +348,7 @@
       "Well, there goes that streak. Confirm the inevitable?",
       "In a twist absolutely nobody saw coming, Galen was at it again. Reset?",
       "Breaking news: Galen was at it. Water is also wet. Confirm reset?",
-      "Color us stunned. We are not stunned. Reset the counter?",
+      "Colour us stunned. We are not stunned. Reset the counter?",
       "The streak has ended, exactly as tradition demands. Confirm reset?",
       "Another day, another Galen incident. Shall we reset?",
       "At this point it's less a counter and more a formality. Reset anyway?",
