@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Days Since Galen Was At It</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #1a1a2e;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #e0e0e0;
+      padding: 24px;
+    }
+
+    .sign {
+      background-color: #16213e;
+      border: 6px solid #e94560;
+      border-radius: 16px;
+      padding: 48px 64px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(233, 69, 96, 0.4);
+      margin-bottom: 32px;
+      max-width: 90vw;
+    }
+
+    .sign-title {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #a0a0c0;
+      margin-bottom: 20px;
+    }
+
+    .days-count {
+      font-size: clamp(6rem, 20vw, 12rem);
+      font-weight: 900;
+      color: #e94560;
+      line-height: 1;
+      text-shadow: 0 0 20px rgba(233, 69, 96, 0.6);
+    }
+
+    .days-label {
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #a0a0c0;
+      margin-top: 12px;
+    }
+
+    .reset-button {
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #e0e0e0;
+      background-color: #16213e;
+      border: 3px solid #e94560;
+      border-radius: 10px;
+      padding: 14px 28px;
+      cursor: pointer;
+      margin-bottom: 32px;
+      transition: background-color 0.15s ease, transform 0.1s ease;
+    }
+
+    .reset-button:hover {
+      background-color: #1e2a4f;
+    }
+
+    .reset-button:active {
+      transform: scale(0.97);
+    }
+
+    .clock-container {
+      text-align: center;
+    }
+
+    .clock-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: #606080;
+      margin-bottom: 8px;
+    }
+
+    .clock {
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      color: #c0c0e0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 10;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background-color: #16213e;
+      border: 4px solid #e94560;
+      border-radius: 14px;
+      padding: 32px;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(233, 69, 96, 0.4);
+    }
+
+    .modal-quip {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      color: #e0e0e0;
+      margin-bottom: 24px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .modal-actions button {
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-radius: 8px;
+      padding: 12px 20px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .modal-confirm {
+      background-color: #e94560;
+      color: #16213e;
+    }
+
+    .modal-confirm:hover {
+      background-color: #ff5b78;
+    }
+
+    .modal-cancel {
+      background-color: transparent;
+      border-color: #606080;
+      color: #a0a0c0;
+    }
+
+    .modal-cancel:hover {
+      color: #e0e0e0;
+      border-color: #a0a0c0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sign">
+    <div class="sign-title">Days since Galen was at it</div>
+    <div class="days-count" id="days-count">--</div>
+    <div class="days-label">Days</div>
+  </div>
+
+  <button class="reset-button" id="reset-button" type="button">He was at it again</button>
+
+  <div class="clock-container">
+    <div class="clock-label">Current time</div>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-quip" id="modal-quip"></div>
+      <div class="modal-actions">
+        <button class="modal-confirm" id="modal-confirm" type="button">Reset it</button>
+        <button class="modal-cancel" id="modal-cancel" type="button">Nevermind</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const QUIPS = [
+      "Shocking. Truly shocking. Nobody could have predicted this. Reset the counter?",
+      "Well, there goes that streak. Confirm the inevitable?",
+      "In a twist absolutely nobody saw coming, Galen was at it again. Reset?",
+      "Breaking news: Galen was at it. Water is also wet. Confirm reset?",
+      "Color us stunned. We are not stunned. Reset the counter?",
+      "The streak has ended, exactly as tradition demands. Confirm reset?",
+      "Another day, another Galen incident. Shall we reset?",
+      "At this point it's less a counter and more a formality. Reset anyway?",
+      "Alert the media: Galen did the thing again. Reset the counter?",
+      "This is now, statistically, the most predictable event in the building. Confirm reset?"
+    ];
+
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('clock').textContent = h + ':' + m + ':' + s;
+    }
+
+    function daysBetween(since, now) {
+      const startOfSince = new Date(since.getFullYear(), since.getMonth(), since.getDate());
+      const startOfNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      return Math.round((startOfNow - startOfSince) / 86400000);
+    }
+
+    let sinceDate = null;
+
+    function renderDays() {
+      if (!sinceDate) return;
+      document.getElementById('days-count').textContent = daysBetween(sinceDate, new Date());
+    }
+
+    async function fetchStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        sinceDate = new Date(data.since);
+        renderDays();
+      } catch (err) {
+        console.error('Failed to load status', err);
+      }
+    }
+
+    async function resetCounter() {
+      try {
+        const res = await fetch('/api/reset', { method: 'POST' });
+        const data = await res.json();
+        sinceDate = new Date(data.since);
+        renderDays();
+      } catch (err) {
+        console.error('Failed to reset counter', err);
+      }
+    }
+
+    const overlay = document.getElementById('modal-overlay');
+    const quipEl = document.getElementById('modal-quip');
+
+    function openModal() {
+      quipEl.textContent = QUIPS[Math.floor(Math.random() * QUIPS.length)];
+      overlay.classList.add('open');
+    }
+
+    function closeModal() {
+      overlay.classList.remove('open');
+    }
+
+    document.getElementById('reset-button').addEventListener('click', openModal);
+    document.getElementById('modal-cancel').addEventListener('click', closeModal);
+    document.getElementById('modal-confirm').addEventListener('click', () => {
+      closeModal();
+      resetCounter();
+    });
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal();
+    });
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    fetchStatus();
+    setInterval(fetchStatus, 60000);
+    setInterval(renderDays, 60000);
+  </script>
+
+</body>
+</html>
